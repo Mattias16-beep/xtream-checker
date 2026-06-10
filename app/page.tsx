@@ -63,7 +63,7 @@ export default function HomePage() {
   const [history, setHistory] = useState<HistoryEntry[]>([])
   const [clientLatency, setClientLatency] = useState<number | undefined>()
   const [isLoadingLatency, setIsLoadingLatency] = useState(false)
-  const [prefill, setPrefill] = useState<{ serverUrl: string; username: string } | null>(null)
+  const [prefill, setPrefill] = useState<{ serverUrl: string; username: string; password?: string } | null>(null)
   const [lastCredentials, setLastCredentials] = useState<XtreamCredentials | null>(null)
   const [bulkResults, setBulkResults] = useState<BulkResult[] | null>(null)
   const [isBulkLoading, setIsBulkLoading] = useState(false)
@@ -221,6 +221,11 @@ export default function HomePage() {
     }
   }, [])
 
+  const handleRecheck = useCallback((entry: SingleHistoryEntry) => {
+    setPrefill({ serverUrl: `http://${entry.host}`, username: entry.username })
+    window.scrollTo({ top: 0, behavior: "smooth" })
+  }, [])
+
   const handleClearHistory = useCallback(() => {
     setHistory([])
     saveHistory([])
@@ -242,6 +247,13 @@ export default function HomePage() {
       <CheckerForm
         onSubmit={handleSubmit}
         onBulkSubmit={handleBulkSubmit}
+        onTabChange={(tab) => {
+          if (tab === "generate" || tab === "url") {
+            setResult(null)
+            setClientLatency(undefined)
+            setBulkResults(null)
+          }
+        }}
         isLoading={isLoading || isBulkLoading}
         prefill={prefill}
       />
@@ -272,6 +284,7 @@ export default function HomePage() {
       <HistoryList
         entries={history}
         onSelect={handleHistorySelect}
+        onRecheck={handleRecheck}
         onClear={handleClearHistory}
       />
     </main>

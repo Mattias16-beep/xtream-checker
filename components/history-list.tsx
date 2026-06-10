@@ -9,6 +9,7 @@ import type { BulkHistoryEntry, BulkValidDetail, HistoryEntry, SingleHistoryEntr
 interface HistoryListProps {
   entries: HistoryEntry[]
   onSelect: (entry: HistoryEntry) => void
+  onRecheck: (entry: SingleHistoryEntry) => void
   onClear: () => void
 }
 
@@ -148,7 +149,7 @@ function BulkEntryRow({
   )
 }
 
-export function HistoryList({ entries, onSelect, onClear }: HistoryListProps) {
+export function HistoryList({ entries, onSelect, onRecheck, onClear }: HistoryListProps) {
   const [expandedId, setExpandedId] = useState<string | null>(null)
 
   function toggleExpand(id: string) {
@@ -176,13 +177,24 @@ export function HistoryList({ entries, onSelect, onClear }: HistoryListProps) {
                 <li key={entry.id}>
                   {index > 0 && <div className="mx-4 h-px bg-border" />}
                   {entry.type === "single" ? (
-                    <button
-                      type="button"
-                      onClick={() => onSelect(entry)}
-                      className="w-full px-4 py-3 text-left transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
-                    >
-                      <SingleEntryRow entry={entry} />
-                    </button>
+                    <div className="flex items-center gap-1 pr-2">
+                      <button
+                        type="button"
+                        onClick={() => onSelect(entry)}
+                        className="flex-1 px-4 py-3 text-left transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+                      >
+                        <SingleEntryRow entry={entry} />
+                      </button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="shrink-0 text-xs text-muted-foreground"
+                        onClick={() => onRecheck(entry)}
+                        title="Re-check"
+                      >
+                        ↺
+                      </Button>
+                    </div>
                   ) : (
                     <BulkEntryRow
                       entry={entry}

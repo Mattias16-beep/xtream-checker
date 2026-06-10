@@ -17,6 +17,17 @@ function formatExpDate(expDate: string | null): string {
   })
 }
 
+function expirationWarning(expDate: string | null): { label: string; className: string } | null {
+  if (expDate === null) return null
+  const ts = parseInt(expDate, 10)
+  if (isNaN(ts)) return null
+  const daysLeft = Math.ceil((ts * 1000 - Date.now()) / 86_400_000)
+  if (daysLeft < 0) return { label: "Expired", className: "bg-red-500/15 text-red-400 border-red-500/30" }
+  if (daysLeft <= 7) return { label: `Expires in ${daysLeft}d`, className: "bg-red-500/15 text-red-400 border-red-500/30" }
+  if (daysLeft <= 30) return { label: `Expires in ${daysLeft}d`, className: "bg-orange-500/15 text-orange-400 border-orange-500/30" }
+  return null
+}
+
 function statusLabel(status: string): { label: string; className: string } {
   switch (status.toLowerCase()) {
     case "active":
@@ -62,13 +73,21 @@ export function ResultCard({ result, credentials }: { result: CheckResult; crede
   if (result.status === "valid" && result.userInfo) {
     const { userInfo } = result
     const { label: sLabel, className: sClass } = statusLabel(userInfo.status)
+    const expWarning = expirationWarning(userInfo.exp_date)
 
     return (
       <Card>
         <CardHeader className="flex flex-row items-center justify-between gap-4">
-          <Badge className="w-fit bg-green-500/15 text-green-400 border-green-500/30 hover:bg-green-500/15">
-            ✓ Valid Subscription
-          </Badge>
+          <div className="flex items-center gap-2 flex-wrap">
+            <Badge className="w-fit bg-green-500/15 text-green-400 border-green-500/30 hover:bg-green-500/15">
+              ✓ Valid Subscription
+            </Badge>
+            {expWarning && (
+              <Badge className={`w-fit ${expWarning.className}`}>
+                ⚠ {expWarning.label}
+              </Badge>
+            )}
+          </div>
           {m3uUrl && (
             <Button
               variant="outline"

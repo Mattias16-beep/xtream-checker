@@ -25,11 +25,12 @@ function loadSavedCreds(): { username: string; password: string } {
 interface CheckerFormProps {
   onSubmit: (credentials: XtreamCredentials) => void
   onBulkSubmit: (urls: string[], username: string, password: string) => void
+  onTabChange?: (tab: string) => void
   isLoading: boolean
   prefill?: { serverUrl: string; username: string; password?: string } | null
 }
 
-export function CheckerForm({ onSubmit, onBulkSubmit, isLoading, prefill }: CheckerFormProps) {
+export function CheckerForm({ onSubmit, onBulkSubmit, onTabChange, isLoading, prefill }: CheckerFormProps) {
   const [tab, setTab] = useState<string>("fields")
   const [serverUrl, setServerUrl] = useState("")
   const [username, setUsername] = useState("")
@@ -134,7 +135,16 @@ export function CheckerForm({ onSubmit, onBulkSubmit, isLoading, prefill }: Chec
         </div>
       </div>
 
-      <Tabs value={tab} onValueChange={(v) => setTab(v)}>
+      <Tabs value={tab} onValueChange={(v) => {
+        if (v === "generate" || v === "url") {
+          setServerUrl("")
+          setUsername("")
+          setPassword("")
+          setFullUrl("")
+        }
+        setTab(v)
+        onTabChange?.(v)
+      }}>
         <TabsList className="w-full">
           <TabsTrigger value="fields" className="flex-1">Single</TabsTrigger>
           <TabsTrigger value="bulk" className="flex-1">Bulk</TabsTrigger>
