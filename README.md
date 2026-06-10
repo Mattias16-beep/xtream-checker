@@ -1,4 +1,10 @@
-https://xtream-checker-lac.vercel.app/
+<div align="center">
+
+Try the app live:
+
+**https://xtream-checker-lac.vercel.app/**
+
+</div>
 
 # Xtream Checker
 
