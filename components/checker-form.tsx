@@ -8,9 +8,6 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { parseXtreamUrl } from "@/lib/parse-xtream-url"
 import type { XtreamCredentials } from "@/lib/types"
 
-function buildM3uUrl(serverUrl: string, username: string, password: string): string {
-  return `${serverUrl}/get.php?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}&type=m3u_plus&output=ts`
-}
 
 const CREDS_KEY = "xc-credentials"
 
@@ -95,48 +92,40 @@ export function CheckerForm({ onSubmit, onBulkSubmit, onTabChange, isLoading, pr
     onBulkSubmit(urls, username.trim(), password.trim())
   }
 
-  const [copied, setCopied] = useState(false)
-
-  async function handleCopyM3u() {
-    const url = buildM3uUrl(serverUrl.trim(), username.trim(), password.trim())
-    await navigator.clipboard.writeText(url)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
-
   const canSubmit = serverUrl.trim() && username.trim() && password.trim() && !isLoading
   const canBulkSubmit = bulkUrls.trim() && username.trim() && password.trim() && !isLoading
-  const canGenerate = serverUrl.trim() && username.trim() && password.trim()
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-col gap-3">
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="username">Username</Label>
-          <Input
-            id="username"
-            placeholder="username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            disabled={isLoading}
-            autoComplete="off"
-          />
+      {tab !== "url" && (
+        <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="username">Username</Label>
+            <Input
+              id="username"
+              placeholder="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              disabled={isLoading}
+              autoComplete="off"
+            />
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="password">Password</Label>
+            <Input
+              id="password"
+              placeholder="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              disabled={isLoading}
+              autoComplete="off"
+            />
+          </div>
         </div>
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="password">Password</Label>
-          <Input
-            id="password"
-            placeholder="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            disabled={isLoading}
-            autoComplete="off"
-          />
-        </div>
-      </div>
+      )}
 
       <Tabs value={tab} onValueChange={(v) => {
-        if (v === "generate" || v === "url") {
+        if (v === "url") {
           setServerUrl("")
           setUsername("")
           setPassword("")
@@ -149,7 +138,6 @@ export function CheckerForm({ onSubmit, onBulkSubmit, onTabChange, isLoading, pr
           <TabsTrigger value="fields" className="flex-1">Single</TabsTrigger>
           <TabsTrigger value="bulk" className="flex-1">Bulk</TabsTrigger>
           <TabsTrigger value="url" className="flex-1">Full URL</TabsTrigger>
-          <TabsTrigger value="generate" className="flex-1">Generate</TabsTrigger>
         </TabsList>
 
         <TabsContent value="fields" className="mt-4">
@@ -184,51 +172,6 @@ export function CheckerForm({ onSubmit, onBulkSubmit, onTabChange, isLoading, pr
             />
             {urlError && (
               <p className="text-xs text-destructive">Invalid Xtream URL format</p>
-            )}
-          </div>
-        </TabsContent>
-
-        <TabsContent value="generate" className="mt-4">
-          <div className="flex flex-col gap-3">
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="genServerUrl">Server URL</Label>
-              <Input
-                id="genServerUrl"
-                type="url"
-                placeholder="http://domain.com:8080"
-                value={serverUrl}
-                onChange={(e) => setServerUrl(e.target.value)}
-              />
-            </div>
-            {canGenerate ? (
-              <div className="flex flex-col gap-2">
-                <Label>Generated M3U URL</Label>
-                <div className="rounded-md border border-input bg-muted px-3 py-2 font-mono text-xs text-muted-foreground break-all select-all">
-                  {buildM3uUrl(serverUrl.trim(), username.trim(), password.trim())}
-                </div>
-                <div className="flex gap-2">
-                  <Button type="button" variant="outline" className="flex-1" onClick={handleCopyM3u}>
-                    {copied ? "✓ Copied!" : "Copy"}
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="flex-1"
-                    onClick={() =>
-                      window.open(
-                        buildM3uUrl(serverUrl.trim(), username.trim(), password.trim()),
-                        "_blank"
-                      )
-                    }
-                  >
-                    Open in new tab
-                  </Button>
-                </div>
-              </div>
-            ) : (
-              <p className="text-xs text-muted-foreground">
-                Fill in the server URL, username and password above to generate the link.
-              </p>
             )}
           </div>
         </TabsContent>

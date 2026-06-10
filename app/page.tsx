@@ -8,6 +8,7 @@ import { NetworkStats } from "@/components/network-stats"
 import { HistoryList } from "@/components/history-list"
 import { BulkResults } from "@/components/bulk-results"
 import LatencyTester from "@/components/latency-tester"
+import { GenerateTab } from "@/components/generate-tab"
 import type {
   BulkHistoryEntry,
   BulkResult,
@@ -249,10 +250,14 @@ export default function HomePage() {
       <Tabs defaultValue="checker">
         <TabsList className="w-full">
           <TabsTrigger value="checker" className="flex-1">Checker</TabsTrigger>
-          <TabsTrigger value="latency" className="flex-1">Latency Tester</TabsTrigger>
+          <TabsTrigger value="generate" className="flex-1">Generate</TabsTrigger>
+          <TabsTrigger value="latency" className="flex-1">Latency</TabsTrigger>
         </TabsList>
 
         <TabsContent value="checker" className="mt-6 flex flex-col gap-6">
+          <p className="text-sm text-muted-foreground">
+            Paste a server URL with your username and password to check if the credentials are valid, whether the server is reachable, and get geolocation, ISP info and latency measured directly from your connection. Use Bulk to test multiple servers at once, or Full URL to paste a complete Xtream stream link.
+          </p>
           <CheckerForm
             onSubmit={handleSubmit}
             onBulkSubmit={handleBulkSubmit}
@@ -296,6 +301,10 @@ export default function HomePage() {
             onRecheck={handleRecheck}
             onClear={handleClearHistory}
           />
+        </TabsContent>
+
+        <TabsContent value="generate" className="mt-6">
+          <GenerateTab />
         </TabsContent>
 
         <TabsContent value="latency" className="mt-6">

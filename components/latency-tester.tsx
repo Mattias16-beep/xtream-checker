@@ -212,6 +212,9 @@ export default function LatencyTester() {
 
   return (
     <div className="flex flex-col gap-4 w-full max-w-4xl mx-auto">
+      <p className="text-sm text-muted-foreground">
+        Enter any URL, IP address or domain name one per line. Get DNS resolution, geolocation, ISP and latency measured from your network.
+      </p>
       <textarea
         value={text}
         onChange={(e) => setText(e.target.value)}
