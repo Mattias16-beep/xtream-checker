@@ -1,11 +1,13 @@
 "use client"
 
 import { useCallback, useEffect, useState } from "react"
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { CheckerForm } from "@/components/checker-form"
 import { ResultCard } from "@/components/result-card"
 import { NetworkStats } from "@/components/network-stats"
 import { HistoryList } from "@/components/history-list"
 import { BulkResults } from "@/components/bulk-results"
+import LatencyTester from "@/components/latency-tester"
 import type {
   BulkHistoryEntry,
   BulkResult,
@@ -244,49 +246,62 @@ export default function HomePage() {
         </p>
       </div>
 
-      <CheckerForm
-        onSubmit={handleSubmit}
-        onBulkSubmit={handleBulkSubmit}
-        onTabChange={(tab) => {
-          if (tab === "generate" || tab === "url") {
-            setResult(null)
-            setClientLatency(undefined)
-            setBulkResults(null)
-          }
-        }}
-        isLoading={isLoading || isBulkLoading}
-        prefill={prefill}
-      />
+      <Tabs defaultValue="checker">
+        <TabsList className="w-full">
+          <TabsTrigger value="checker" className="flex-1">Checker</TabsTrigger>
+          <TabsTrigger value="latency" className="flex-1">Latency Tester</TabsTrigger>
+        </TabsList>
 
-      {result && result.status !== "idle" && result.status !== "loading" && (
-        <ResultCard result={result} credentials={lastCredentials ?? undefined} />
-      )}
+        <TabsContent value="checker" className="mt-6 flex flex-col gap-6">
+          <CheckerForm
+            onSubmit={handleSubmit}
+            onBulkSubmit={handleBulkSubmit}
+            onTabChange={(tab) => {
+              if (tab === "generate" || tab === "url") {
+                setResult(null)
+                setClientLatency(undefined)
+                setBulkResults(null)
+              }
+            }}
+            isLoading={isLoading || isBulkLoading}
+            prefill={prefill}
+          />
 
-      {showNetworkStats && (
-        <NetworkStats
-          geoInfo={result?.geoInfo}
-          resolvedIp={result?.resolvedIp}
-          clientLatency={clientLatency}
-          isLoadingLatency={isLoadingLatency}
-        />
-      )}
+          {result && result.status !== "idle" && result.status !== "loading" && (
+            <ResultCard result={result} credentials={lastCredentials ?? undefined} />
+          )}
 
-      {bulkResults && bulkCredentials && (
-        <BulkResults
-          results={bulkResults}
-          total={bulkResults.length}
-          username={bulkCredentials.username}
-          password={bulkCredentials.password}
-          onCheckSingle={handleCheckSingle}
-        />
-      )}
+          {showNetworkStats && (
+            <NetworkStats
+              geoInfo={result?.geoInfo}
+              resolvedIp={result?.resolvedIp}
+              clientLatency={clientLatency}
+              isLoadingLatency={isLoadingLatency}
+            />
+          )}
 
-      <HistoryList
-        entries={history}
-        onSelect={handleHistorySelect}
-        onRecheck={handleRecheck}
-        onClear={handleClearHistory}
-      />
+          {bulkResults && bulkCredentials && (
+            <BulkResults
+              results={bulkResults}
+              total={bulkResults.length}
+              username={bulkCredentials.username}
+              password={bulkCredentials.password}
+              onCheckSingle={handleCheckSingle}
+            />
+          )}
+
+          <HistoryList
+            entries={history}
+            onSelect={handleHistorySelect}
+            onRecheck={handleRecheck}
+            onClear={handleClearHistory}
+          />
+        </TabsContent>
+
+        <TabsContent value="latency" className="mt-6">
+          <LatencyTester />
+        </TabsContent>
+      </Tabs>
     </main>
   )
 }
