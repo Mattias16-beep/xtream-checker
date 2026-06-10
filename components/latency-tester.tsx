@@ -331,6 +331,33 @@ export default function LatencyTester() {
           </Card>
         </div>
       )}
+      <div className="flex flex-col gap-3 rounded-md border border-border bg-muted/30 px-4 py-4 text-sm">
+        <p className="text-muted-foreground">
+          For a real latency analysis with route tracing, use <strong className="text-foreground">mtr</strong> in your terminal — it combines ping and traceroute in real time:
+        </p>
+        <div className="flex flex-col gap-2">
+          {[
+            { os: "macOS", cmd: "sudo mtr domain.com" },
+            { os: "Windows", cmd: "mtr domain.com" },
+            { os: "Linux", cmd: "sudo mtr domain.com" },
+          ].map(({ os, cmd }) => (
+            <div key={os} className="flex items-center gap-3">
+              <span className="w-20 shrink-0 text-xs text-muted-foreground">{os}</span>
+              <code className="flex-1 rounded bg-background px-2 py-1 font-mono text-xs text-foreground border border-border">
+                {cmd}
+              </code>
+            </div>
+          ))}
+        </div>
+        <p className="text-xs text-muted-foreground">
+          <code className="font-mono">sudo</code> is required on macOS and Linux — mtr needs raw socket access. If not installed:{" "}
+          <span className="text-foreground">macOS → </span><code className="font-mono">brew install mtr</code>
+          {" · "}
+          <span className="text-foreground">Windows → </span><code className="font-mono">winmtr-reset.github.io</code>
+          {" · "}
+          <span className="text-foreground">Linux → </span><code className="font-mono">sudo apt install mtr</code>
+        </p>
+      </div>
     </div>
   );
 }
