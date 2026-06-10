@@ -41,6 +41,12 @@ export interface GeoInfo {
 
 export type CheckStatus = 'idle' | 'loading' | 'valid' | 'invalid_credentials' | 'unreachable' | 'rate_limited' | 'error'
 
+export interface CatalogInfo {
+  live: number
+  vod: number
+  series: number
+}
+
 export interface CheckResult {
   status: CheckStatus
   userInfo?: XtreamUserInfo
@@ -48,6 +54,7 @@ export interface CheckResult {
   geoInfo?: GeoInfo
   resolvedIp?: string
   errorMessage?: string
+  catalogInfo?: CatalogInfo
 }
 
 export interface SingleHistoryEntry {

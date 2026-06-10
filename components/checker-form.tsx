@@ -1,10 +1,11 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Button } from "@/components/ui/button"
+import { buttonVariants } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
+import { cn } from "@/lib/utils"
 import { parseXtreamUrl } from "@/lib/parse-xtream-url"
 import type { XtreamCredentials } from "@/lib/types"
 
@@ -153,9 +154,9 @@ export function CheckerForm({ onSubmit, onBulkSubmit, onTabChange, isLoading, pr
                 disabled={isLoading}
               />
             </div>
-            <Button type="submit" className="w-full" disabled={!canSubmit}>
+            <button type="submit" disabled={!canSubmit} className={cn(buttonVariants(), "w-full")}>
               {isLoading ? <Spinner /> : "Check"}
-            </Button>
+            </button>
           </form>
         </TabsContent>
 
@@ -192,9 +193,9 @@ export function CheckerForm({ onSubmit, onBulkSubmit, onTabChange, isLoading, pr
                 Uses the username &amp; password above for all URLs
               </p>
             </div>
-            <Button type="submit" className="w-full" disabled={!canBulkSubmit}>
+            <button type="submit" disabled={!canBulkSubmit} className={cn(buttonVariants(), "w-full")}>
               {isLoading ? <Spinner /> : "Check All"}
-            </Button>
+            </button>
           </form>
         </TabsContent>
       </Tabs>

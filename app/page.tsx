@@ -9,6 +9,7 @@ import { HistoryList } from "@/components/history-list"
 import { BulkResults } from "@/components/bulk-results"
 import LatencyTester from "@/components/latency-tester"
 import { GenerateTab } from "@/components/generate-tab"
+
 import type {
   BulkHistoryEntry,
   BulkResult,
@@ -310,6 +311,8 @@ export default function HomePage() {
         <TabsContent value="latency" className="mt-6">
           <LatencyTester />
         </TabsContent>
+
+
       </Tabs>
     </main>
   )

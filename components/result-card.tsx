@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { CheckResult, XtreamCredentials } from "@/lib/types"
+import { CatalogInfo, CheckResult, XtreamCredentials } from "@/lib/types"
 
 function formatExpDate(expDate: string | null): string {
   if (expDate === null) return "Never"
@@ -58,6 +58,8 @@ function InfoRow({ label, value }: InfoRowProps) {
 export function ResultCard({ result, credentials }: { result: CheckResult; credentials?: XtreamCredentials }) {
   const [copied, setCopied] = useState(false)
   const [showM3u, setShowM3u] = useState(false)
+  const [catalog, setCatalog] = useState<CatalogInfo | null>(null)
+  const [catalogLoading, setCatalogLoading] = useState(false)
 
   const m3uUrl = credentials
     ? `${credentials.serverUrl}/get.php?username=${encodeURIComponent(credentials.username)}&password=${encodeURIComponent(credentials.password)}&type=m3u_plus&output=ts`
@@ -68,6 +70,24 @@ export function ResultCard({ result, credentials }: { result: CheckResult; crede
     await navigator.clipboard.writeText(m3uUrl)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
+  }
+
+  async function handleLoadCatalog() {
+    if (!credentials) return
+    setCatalogLoading(true)
+    try {
+      const res = await fetch("/api/catalog", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(credentials),
+      })
+      const data = await res.json()
+      setCatalog(data)
+    } catch {
+      // silently fail
+    } finally {
+      setCatalogLoading(false)
+    }
   }
 
   if (result.status === "valid" && result.userInfo) {
@@ -117,6 +137,37 @@ export function ResultCard({ result, credentials }: { result: CheckResult; crede
             />
           </div>
 
+          {credentials && !catalog && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="self-start text-xs"
+              onClick={handleLoadCatalog}
+              disabled={catalogLoading}
+            >
+              {catalogLoading ? "Loading catalog…" : "Check catalog (Live / VOD / Films / Series)"}
+            </Button>
+          )}
+
+          {catalog && (
+            <div className="flex gap-4 rounded-md border border-border bg-muted/30 px-4 py-3 text-sm">
+              <div className="flex flex-col items-center gap-0.5">
+                <span className="text-lg font-bold">{catalog.live.toLocaleString()}</span>
+                <span className="text-xs text-muted-foreground">Live</span>
+              </div>
+              <div className="w-px bg-border" />
+              <div className="flex flex-col items-center gap-0.5">
+                <span className="text-lg font-bold">{catalog.vod.toLocaleString()}</span>
+                <span className="text-xs text-muted-foreground">Films</span>
+              </div>
+              <div className="w-px bg-border" />
+              <div className="flex flex-col items-center gap-0.5">
+                <span className="text-lg font-bold">{catalog.series.toLocaleString()}</span>
+                <span className="text-xs text-muted-foreground">Series</span>
+              </div>
+            </div>
+          )}
+
           {showM3u && m3uUrl && (
             <div className="flex flex-col gap-2">
               <div className="rounded-md border border-green-500/20 bg-green-500/5 px-3 py-2 font-mono text-xs text-muted-foreground break-all select-all">
@@ -135,6 +186,7 @@ export function ResultCard({ result, credentials }: { result: CheckResult; crede
                   Open in new tab
                 </Button>
               </div>
+
             </div>
           )}
         </CardContent>

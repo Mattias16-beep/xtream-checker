@@ -97,6 +97,7 @@ export function GenerateTab() {
               Open in new tab
             </Button>
           </div>
+
         </div>
       )}
     </div>
